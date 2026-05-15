@@ -1,0 +1,20 @@
+{
+  "servers": {
+    "pandium": {
+      "type": "stdio",
+      "command": "node",
+      "args": ["${workspaceFolder}/build/index.js"],
+      "env": {
+        "PANDIUM_API_KEY": "${input:pandiumApiKey}"
+      }
+    }
+  },
+  "inputs": [
+    {
+      "id": "pandiumApiKey",
+      "type": "promptString",
+      "description": "Pandium sandbox API key",
+      "password": true
+    }
+  ]
+}
