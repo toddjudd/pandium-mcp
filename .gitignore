@@ -1,3 +1,23 @@
-.env
+# Dependencies
 node_modules/
+
+# Build output
 build/
+*.tsbuildinfo
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+
+# Keep .vscode/mcp.json committed; ignore personal editor settings
+.vscode/*
+!.vscode/mcp.json

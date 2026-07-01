@@ -10,18 +10,24 @@ import {
   listTenants,
   triggerSync,
   getRunStatus,
+  environment,
+  baseUrl,
 } from "./pandium.js";
 
+// Server name includes environment to distinguish between instances
 const server = new McpServer({
-  name: "pandium-mcp",
+  name: `pandium-${environment}`,
   version: "0.1.0",
 });
+
+// Log environment on startup (visible in MCP server logs)
+console.error(`[pandium-mcp] Starting in ${environment} mode (${baseUrl})`);
 
 // ── Integrations ──────────────────────────────────────────────────────────────
 
 server.tool(
   "pandium_list_integrations",
-  "List all integrations in the Pandium sandbox account",
+  `List all integrations in the Pandium ${environment} account`,
   {
     limit: z.number().int().min(1).max(500).optional().describe("Max results (default 100)"),
     skip: z.number().int().min(0).optional().describe("Records to skip for pagination"),
@@ -103,7 +109,7 @@ server.tool(
 
 server.tool(
   "pandium_list_tenants",
-  "List tenants in the Pandium sandbox account, optionally filtered by integration",
+  `List tenants in the Pandium ${environment} account, optionally filtered by integration`,
   {
     integration_id: z.number().int().optional().describe("Filter by integration ID"),
     limit: z.number().int().min(1).max(500).optional().describe("Max results (default 100)"),

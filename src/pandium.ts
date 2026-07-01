@@ -1,15 +1,29 @@
-const BASE_URL = "https://api.sandbox.pandium.com";
+// Environment is determined by PANDIUM_ENV variable (defaults to "sandbox")
+// This allows running separate server instances for sandbox vs production
+const PANDIUM_ENV = process.env.PANDIUM_ENV || "sandbox";
+
+const BASE_URLS: Record<string, string> = {
+  sandbox: "https://api.sandbox.pandium.com",
+  production: "https://api.pandium.io",
+};
+
+const BASE_URL = BASE_URLS[PANDIUM_ENV];
+if (!BASE_URL) {
+  throw new Error(`Invalid PANDIUM_ENV: "${PANDIUM_ENV}". Must be "sandbox" or "production".`);
+}
 
 function getApiKey(): string {
   const key = process.env.PANDIUM_API_KEY;
   if (!key) throw new Error("PANDIUM_API_KEY environment variable is not set");
-  return key;
+  // Trim to guard against trailing newlines from secret managers (e.g. `op run`)
+  return key.trim();
 }
 
-async function pandiumFetch<T>(
-  path: string,
-  options: RequestInit = {}
-): Promise<T> {
+// Export environment info for use in tool descriptions
+export const environment = PANDIUM_ENV;
+export const baseUrl = BASE_URL;
+
+async function pandiumFetch<T>(path: string, options: RequestInit = {}): Promise<T> {
   const url = `${BASE_URL}${path}`;
   const response = await fetch(url, {
     ...options,
@@ -117,8 +131,7 @@ export function listTenants(params?: {
   archived?: boolean;
 }): Promise<Tenant[]> {
   const qs = new URLSearchParams();
-  if (params?.integration_id != null)
-    qs.set("integration_id", String(params.integration_id));
+  if (params?.integration_id != null) qs.set("integration_id", String(params.integration_id));
   if (params?.limit != null) qs.set("limit", String(params.limit));
   if (params?.skip != null) qs.set("skip", String(params.skip));
   if (params?.archived != null) qs.set("archived", String(params.archived));
